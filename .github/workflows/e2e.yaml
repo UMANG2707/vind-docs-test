@@ -9,5 +9,6 @@
        steps:
          - uses: actions/checkout@v4
          - uses: loft-sh/setup-vind@v1
+         - run: docker ps
          - run: kubectl get nodes
          - run: make e2e
