@@ -14,6 +14,7 @@
          - uses: loft-sh/setup-vind@v1
            with:
              name: agent
+         - run: kubectl --context vcluster-docker_platform get nodes
          - run: docker ps
          - run: kubectl config get-contexts
          - run: kubectl get nodes
