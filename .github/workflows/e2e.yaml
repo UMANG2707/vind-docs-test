@@ -10,7 +10,7 @@
          - uses: actions/checkout@v4
          - uses: loft-sh/setup-vind@v1
            with:
-             kubernetes-version: "1.36.0"
+             kubernetes-version: "1.35.0"
          - run: docker ps
          - run: kubectl get nodes
          - run: make e2e
