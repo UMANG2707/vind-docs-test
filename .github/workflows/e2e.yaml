@@ -13,7 +13,8 @@
              name: platform
          - uses: loft-sh/setup-vind@v1
            with:
-             name: agent
+             skipClusterDeletion: "true"
+             skipClusterLogsExport: "true"
          - run: kubectl --context vcluster-docker_platform get nodes
          - run: docker ps
          - run: kubectl config get-contexts
