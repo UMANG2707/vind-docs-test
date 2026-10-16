@@ -10,8 +10,11 @@
          - uses: actions/checkout@v4
          - uses: loft-sh/setup-vind@v1
            with:
-             config: hack/vcluster.yaml
+             name: platform
+         - uses: loft-sh/setup-vind@v1
+           with:
+             name: agent
          - run: docker ps
+         - run: kubectl config get-contexts
          - run: kubectl get nodes
-         - run: make e2e
 
