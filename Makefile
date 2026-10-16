@@ -1,2 +1,1 @@
-e2e:
-  kubectl get pods -A
+   e2e: ; kubectl get pods -A
