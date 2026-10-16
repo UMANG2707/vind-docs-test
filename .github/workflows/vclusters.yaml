@@ -18,7 +18,7 @@
          - name: Create PR Virtual Cluster
            env:
              NAME: repo-${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}
-           run: vcluster create $NAME --project default --driver platform
+           run: vcluster create $NAME --project default --driver platform --template vcluster-pro-template
          - name: Deploy Application
            run: kubectl apply -Rf ./kubernetes
          - name: Wait for Deployment
