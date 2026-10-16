@@ -1,4 +1,3 @@
-   # .github/workflows/vclusters.yaml
    name: Pull Request Checks
    on:
      pull_request:
@@ -8,6 +7,7 @@
      e2e:
        runs-on: ubuntu-latest
        steps:
+         - uses: actions/checkout@v4   # FIX 1: get repo files
          - name: Install vCluster CLI
            uses: loft-sh/setup-vcluster@main
          - name: Login to vCluster Platform instance
@@ -18,6 +18,7 @@
          - name: Create PR Virtual Cluster
            env:
              NAME: repo-${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}
+           # FIX 2 + 3: platform driver and template
            run: vcluster create $NAME --project default --driver platform --template vcluster-pro-template
          - name: Deploy Application
            run: kubectl apply -Rf ./kubernetes
@@ -26,7 +27,7 @@
          - name: Run Tests
            run: make e2e
          - name: Delete PR Virtual Cluster
+           if: always()   # FIX 4: always clean up
            env:
              NAME: repo-${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}
-           run: vcluster delete $NAME --project default --driver platform --template vcluster-pro-template
-
+           run: vcluster delete $NAME --project default --driver platform
