@@ -14,3 +14,4 @@
          - run: docker ps
          - run: kubectl get nodes
          - run: make e2e
+
