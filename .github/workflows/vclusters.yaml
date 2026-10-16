@@ -28,4 +28,5 @@
          - name: Delete PR Virtual Cluster
            env:
              NAME: repo-${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}
-           run: vcluster delete $NAME --project default --driver platform
+           run: vcluster delete $NAME --project default --driver platform --template vcluster-pro-template
+
