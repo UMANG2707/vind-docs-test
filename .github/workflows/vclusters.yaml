@@ -1,0 +1,33 @@
+   name: Pull Request Checks
+   on:
+     pull_request:
+       branches:
+         - "main"
+   jobs:
+     e2e:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v4   # FIX 1: get repo files
+         - name: Install vCluster CLI
+           uses: loft-sh/setup-vcluster@main
+         - name: Login to vCluster Platform instance
+           env:
+             PLATFORM_URL: ${{ secrets.PLATFORM_URL }}
+             ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+           run: vcluster platform login $PLATFORM_URL --access-key $ACCESS_KEY
+         - name: Create PR Virtual Cluster
+           env:
+             NAME: repo-${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}
+           # FIX 2 + 3: platform driver and template
+           run: vcluster create $NAME --project default --driver platform --template vcluster-pro-template
+         - name: Deploy Application
+           run: kubectl apply -Rf ./kubernetes
+         - name: Wait for Deployment
+           run: kubectl rollout status deployments/the-app
+         - name: Run Tests
+           run: make e2e
+         - name: Delete PR Virtual Cluster
+           if: always()   # FIX 4: always clean up
+           env:
+             NAME: repo-${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}
+           run: vcluster delete $NAME --project default --driver platform

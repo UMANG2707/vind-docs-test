@@ -1,0 +1,5 @@
+   controlPlane:
+     distro:
+       k8s:
+         image:
+           tag: v1.35.0

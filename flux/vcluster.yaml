@@ -1,0 +1,13 @@
+   exportKubeConfig:
+     context: default
+     server: https://vcluster-demo.vcluster-demo.svc.cluster.local:443
+     insecure: true
+     additionalSecrets:
+     - name: vcluster-flux-kubeconfig
+       context: default
+       server: https://vcluster-demo.vcluster-demo.svc.cluster.local:443
+       insecure: true
+   controlPlane:
+     proxy:
+       extraSANs:
+         - "vcluster-demo.vcluster-demo.svc.cluster.local"

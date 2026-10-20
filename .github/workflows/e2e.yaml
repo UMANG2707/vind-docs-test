@@ -9,6 +9,14 @@
        steps:
          - uses: actions/checkout@v4
          - uses: loft-sh/setup-vind@v1
+           with:
+             name: platform
+         - uses: loft-sh/setup-vind@v1
+           with:
+             skipClusterDeletion: "true"
+             skipClusterLogsExport: "true"
+         - run: kubectl --context vcluster-docker_platform get nodes
          - run: docker ps
+         - run: kubectl config get-contexts
          - run: kubectl get nodes
-         - run: make e2e
+
