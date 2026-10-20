@@ -1,0 +1,49 @@
+   name: Flux Test
+   on:
+     pull_request:
+       branches: [main]
+   jobs:
+     flux:
+       runs-on: ubuntu-latest
+       timeout-minutes: 20
+       steps:
+         - uses: actions/checkout@v4
+
+         - name: Control plane cluster (vind)
+           uses: loft-sh/setup-vind@v1
+
+         - name: Install Flux CLI
+           uses: fluxcd/flux2/action@main
+
+         - name: Install Flux into the cluster
+           run: flux install
+
+         - name: Create tenant cluster (doc config)
+           run: |
+             vcluster use driver helm
+             vcluster create vcluster-demo -n vcluster-demo -f flux/vcluster.yaml --connect=false
+
+         - name: Check kubeconfig Secret exists
+           run: |
+             for i in $(seq 1 30); do
+               kubectl -n vcluster-demo get secret vcluster-flux-kubeconfig && exit 0
+               sleep 5
+             done
+             echo "Secret not found"; kubectl -n vcluster-demo get secrets; exit 1
+
+         - name: Apply doc's Flux files
+           run: kubectl apply -f flux/podinfo.yaml
+
+         - name: Wait for HelmRelease
+           run: kubectl -n vcluster-demo wait helmrelease/podinfo --for=condition=Ready --timeout=5m
+
+         - name: Show Flux status
+           if: always()
+           run: |
+             flux get sources helm -A
+             flux get helmreleases -A
+             kubectl -n vcluster-demo describe helmrelease podinfo | tail -30
+
+         - name: Check app inside tenant cluster
+           if: always()
+           run: vcluster connect vcluster-demo -n vcluster-demo -- kubectl get pods -n podinfo
